@@ -23,7 +23,7 @@ let tasks = [
 
 app.get('/tasks', (req, res) => {
     res.json(tasks);
-}   );
+});
 
 app.post('/tasks', (req, res) => {
     const newTask = {
@@ -34,4 +34,38 @@ app.post('/tasks', (req, res) => {
     };
     tasks.push(newTask);
     res.status(201).json(newTask);
+});
+
+app.put('/tasks/:id', (req, res) => {
+
+    const id = parseInt(req.params.id);
+    const { titulo, descripcion, estado } = req.body;
+    const task = tasks.find((t) => t.id === id);
+
+    if (task) {
+        if (titulo !== undefined) task.titulo = titulo;
+        if (descripcion !== undefined) task.descripcion = descripcion;
+        if (estado !== undefined) task.estado = estado;
+        res.json(task);
+    } else {
+        res.status(404).json({ error: 'Task not found' });
+    }
+    
+    res.json(task);
+})
+
+app.delete('/tasks/:id', (req, res) => {
+    const id = parseInt(req.params.id);
+    const taskIndex = tasks.findIndex((t) => t.id === id);
+
+    if (taskIndex !== -1) {
+        tasks.splice(taskIndex, 1);
+        res.status(204).send();
+    } else {
+        res.status(404).json({ error: 'Task not found' });
+    }
+});
+
+app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`);
 });
